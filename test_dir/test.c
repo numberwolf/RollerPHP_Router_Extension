@@ -52,11 +52,13 @@ typedef struct url_main_is_default {
 	BOOL isMethNull;
 } url_main_is_default;
 
+url_main_is_default *global_bool_main_default;
+
 url_param_link_list *roller_get_param(char *url) {
-	url_main_is_default *bool_main_default = (url_main_is_default*)malloc(sizeof(url_main_is_default));
-	bool_main_default->isHomeNull = TRUE;
-	bool_main_default->isContNull = TRUE;
-	bool_main_default->isMethNull = TRUE;
+	global_bool_main_default = (url_main_is_default*)malloc(sizeof(url_main_is_default));
+	global_bool_main_default->isHomeNull = TRUE;
+	global_bool_main_default->isContNull = TRUE;
+	global_bool_main_default->isMethNull = TRUE;
 
 	char new_url[strlen(url)];
 	memcpy(new_url,url,strlen(url)+1);
@@ -65,18 +67,30 @@ url_param_link_list *roller_get_param(char *url) {
 	char split[] = "/";
 
 	result = strtok(new_url, split);
+	url_param_link_list *return_list = (url_param_link_list*)malloc(sizeof(url_param_link_list));
+	url_param_link_list *ptr = NULL;
+	//ptr = return_list->next;
+	ptr = return_list;
  
     while( result != NULL ) 
    	{
-        printf( "result is \"%s\"\n", result );
-		if(result == HOME_KEY) bool_main_default->isHomeNull = FALSE;
-		if(result == CONT_KEY) bool_main_default->isContNull = FALSE;
-		if(result == METH_KEY) bool_main_default->isMethNull = FALSE;
+		ptr->next = (url_param_link_list*)malloc(sizeof(url_param_link_list));
+		ptr = ptr->next;
+		memcpy(ptr->param, result, strlen(result)+1);
+		//ptr->param[strlen(result)] = '\0';
+		//ptr = ptr->next;
+
+        //printf( "result is \"%s\"\n", ptr->param);
+		if(0 == strcmp(result , HOME_KEY)) global_bool_main_default->isHomeNull = FALSE;
+		if(0 == strcmp(result , CONT_KEY)) global_bool_main_default->isContNull = FALSE;
+		if(0 == strcmp(result , METH_KEY)) global_bool_main_default->isMethNull = FALSE;
 
         result = strtok( NULL, split);
     }
 
-	return NULL;
+	ptr->next = NULL;
+
+	return return_list;
 }
 
 // @mark 得到url主要元素
@@ -110,8 +124,28 @@ url_parser_struct *roller_parser_url(char *url) {
 	printf("new_url:%s,last:%c,newlength:%d\n",new_url,new_url[strlen(new_url)-1],(int)strlen(new_url));
 
 	url_param_link_list *url_param = roller_get_param(new_url);
+	url_parser_struct *return_parser = (url_parser_struct*)malloc(sizeof(url_parser_struct));
 
-	return NULL;
+	if(global_bool_main_default->isHomeNull == TRUE) memcpy(return_parser->home , DEFAULT_HOME,strlen(DEFAULT_HOME));
+	if(global_bool_main_default->isContNull == TRUE) memcpy(return_parser->controller , DEFAULT_CONTROLLER,strlen(DEFAULT_CONTROLLER));
+	if(global_bool_main_default->isMethNull == TRUE) memcpy(return_parser->method , DEFAULT_METHOD,strlen(DEFAULT_METHOD));
+
+	printf("%s\n",url_param->next->param);
+
+	url_param_link_list *ptr = url_param->next;
+	while(ptr->next != NULL) {
+		printf("ptr-> %s,%s\n",ptr->param,HOME_KEY);
+		if(0 == strcmp(ptr->param , HOME_KEY)) printf("==is equal==\n");
+		printf("len:%d,%d\n",(int)strlen(ptr->param),(int)strlen(HOME_KEY));
+
+		if(0 == strcmp(ptr->param , HOME_KEY)) memcpy(return_parser->home , ptr->param,strlen(ptr->param)); 
+		if(0 == strcmp(ptr->param , CONT_KEY)) memcpy(return_parser->controller , ptr->param,strlen(ptr->param)); 
+		if(0 == strcmp(ptr->param , METH_KEY)) memcpy(return_parser->method , ptr->param,strlen(ptr->param)); 
+
+		ptr = ptr->next;
+	}
+
+	return return_parser;
 }
 
 int main() {

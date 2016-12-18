@@ -26,6 +26,8 @@
 #include "php_ini.h"
 #include "ext/standard/info.h"
 #include "php_rollerphp.h"
+#include "include_common.h"
+#include "router.h"
 
 /* If you declare any globals in php_rollerphp.h uncomment this:
    ZEND_DECLARE_MODULE_GLOBALS(rollerphp)
