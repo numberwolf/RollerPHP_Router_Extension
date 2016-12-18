@@ -1,0 +1,8 @@
+rollerphp.lo: /root/code/php5-5.5.9+dfsg/ext/rollerphp/rollerphp.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/root/code/php5-5.5.9+dfsg/ext/rollerphp $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /root/code/php5-5.5.9+dfsg/ext/rollerphp/rollerphp.c -o rollerphp.lo 
+$(phplibdir)/rollerphp.la: ./rollerphp.la
+	$(LIBTOOL) --mode=install cp ./rollerphp.la $(phplibdir)
+
+./rollerphp.la: $(shared_objects_rollerphp) $(ROLLERPHP_SHARED_DEPENDENCIES)
+	$(LIBTOOL) --mode=link $(CC) $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS) $(LDFLAGS) -o $@ -export-dynamic -avoid-version -prefer-pic -module -rpath $(phplibdir) $(EXTRA_LDFLAGS) $(shared_objects_rollerphp) $(ROLLERPHP_SHARED_LIBADD)
+
