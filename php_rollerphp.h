@@ -48,6 +48,7 @@ PHP_MINFO_FUNCTION(rollerphp);
 //PHP_METHOD(Roller, __destruct);
 PHP_METHOD(Roller, gname);
 PHP_METHOD(Roller, sname);
+PHP_METHOD(Roller, startup);
 
 /* 
   	Declare any global variables you may need between the BEGIN
