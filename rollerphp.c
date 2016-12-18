@@ -165,11 +165,13 @@ PHP_METHOD(Roller, gname) {
 	RETURN_STRING(Z_STRVAL_P(name), 0);
 }
 
-// @TODO
+/********************
+  1. StartUP，启动路由，初始化一些数据
+ ********************/
 PHP_METHOD(Roller, startup) {
-	char *buf[80];
+	char buf[80];
     getcwd(buf,sizeof(buf));   
-	php_printf("buf:%s",buf);
+	//php_printf("buf:%s",buf);
     //printf("current working directory: %s\n", buf);  
 
 	zval *value, *self;
