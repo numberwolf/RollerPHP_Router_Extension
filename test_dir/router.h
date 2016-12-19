@@ -50,9 +50,17 @@ typedef struct url_main_is_default {
 	BOOL isHomeNull;
 	BOOL isContNull;
 	BOOL isMethNull;
+	int  paramCount;
 } url_main_is_default;
 
+typedef struct params_kv {
+	char key[50];
+	char value[256];
+	struct params_kv *next;
+} params_kv;
+
 url_main_is_default *global_bool_main_default;
+params_kv *p_kv;
 
 url_param_link_list *roller_get_param(char *url) {
 	global_bool_main_default = (url_main_is_default*)malloc(sizeof(url_main_is_default));
@@ -71,16 +79,18 @@ url_param_link_list *roller_get_param(char *url) {
 	url_param_link_list *ptr = NULL;
 	//ptr = return_list->next;
 	ptr = return_list;
+	global_bool_main_default->paramCount = 0;
  
-    while( result != NULL ) 
-   	{
+    while( result != NULL ) {
+		global_bool_main_default->paramCount++;
+
 		ptr->next = (url_param_link_list*)malloc(sizeof(url_param_link_list));
 		ptr = ptr->next;
 		memcpy(ptr->param, result, strlen(result)+1);
 		//ptr->param[strlen(result)] = '\0';
 		//ptr = ptr->next;
 
-        //printf( "result is \"%s\"\n", ptr->param);
+        ////printf( "result is \"%s\"\n", ptr->param);
 		if(0 == strcmp(result , HOME_KEY)) global_bool_main_default->isHomeNull = FALSE;
 		if(0 == strcmp(result , CONT_KEY)) global_bool_main_default->isContNull = FALSE;
 		if(0 == strcmp(result , METH_KEY)) global_bool_main_default->isMethNull = FALSE;
@@ -130,33 +140,84 @@ url_parser_struct *roller_parser_url(char *url) {
 	if(global_bool_main_default->isContNull == TRUE) memcpy(return_parser->controller , DEFAULT_CONTROLLER,strlen(DEFAULT_CONTROLLER));
 	if(global_bool_main_default->isMethNull == TRUE) memcpy(return_parser->method , DEFAULT_METHOD,strlen(DEFAULT_METHOD));
 
+	//printf("paramCount:%d\n",global_bool_main_default->paramCount);
+	BOOL isSingleCount = FALSE; // 参数是否为单数
+	BOOL noneRouteParam = FALSE; // 是否没有路由参数，只有值参数
+	if(global_bool_main_default->paramCount%2 != 0) {
+		isSingleCount = TRUE;
+	}
+	if(global_bool_main_default->isHomeNull == TRUE && global_bool_main_default->isContNull == TRUE &&global_bool_main_default->isMethNull == TRUE) {
+		noneRouteParam = TRUE;
+	}
+
 	//printf("%s\n",url_param->next->param);
+	p_kv = (params_kv*)malloc(sizeof(params_kv));
+	params_kv *ptr_kv = NULL;
+	ptr_kv = p_kv;
 
 	url_param_link_list *ptr = url_param->next;
+	/****  目前处理方式，路由参数要么都传，要么都不传 ****/
+	BOOL meth_key_showed = FALSE;
+	i = 0;
 	while(ptr->next != NULL) {
+		if(isSingleCount == TRUE && i == 0) { 
+			ptr = ptr->next;
+			i = 2;
+			continue; // 如果为单数，则忽略第一个
+		}
+
 		//printf("ptr-> %s,%s\n",ptr->param,HOME_KEY);
-		//if(0 == strcmp(ptr->param , HOME_KEY)) printf("==is equal==\n");
+		if(0 == strcmp(ptr->param , HOME_KEY)) //printf("==is equal==\n");
 		//printf("len:%d,%d\n",(int)strlen(ptr->param),(int)strlen(HOME_KEY));
 
-		if(0 == strcmp(ptr->param , HOME_KEY)) memcpy(return_parser->home , ptr->param,strlen(ptr->param)); 
-		if(0 == strcmp(ptr->param , CONT_KEY)) memcpy(return_parser->controller , ptr->param,strlen(ptr->param)); 
-		if(0 == strcmp(ptr->param , METH_KEY)) memcpy(return_parser->method , ptr->param,strlen(ptr->param)); 
+		if(noneRouteParam == FALSE && meth_key_showed == FALSE) {
+			if(0 == strcmp(ptr->param , HOME_KEY)) memcpy(return_parser->home , ptr->next->param,strlen(ptr->next->param)); 
+			if(0 == strcmp(ptr->param , CONT_KEY)) memcpy(return_parser->controller , ptr->next->param,strlen(ptr->next->param)); 
+			if(0 == strcmp(ptr->param , METH_KEY)) {
+				memcpy(return_parser->method , ptr->next->param,strlen(ptr->next->param)); 
+				meth_key_showed = TRUE;
+			}
+
+			ptr = ptr->next->next;
+			i+=2;
+			continue;
+		} else {
+			meth_key_showed = TRUE;
+		}
+
+		if(meth_key_showed == TRUE && i%2 == 0) {
+			ptr_kv->next = (params_kv*)malloc(sizeof(params_kv));
+			ptr_kv = ptr_kv->next;
+			memcpy(ptr_kv->key , ptr->param,strlen(ptr->param));
+			memcpy(ptr_kv->value , ptr->next->param,strlen(ptr->next->param));
+		}
+		i++;
 
 		ptr = ptr->next;
 	}
+	ptr_kv->next = NULL;
 
 	return return_parser;
 }
 /*
 int main() {
-	url_parser_struct *url_parser = roller_parser_url("/RollerPHP_framework/hm/Index/ct/test/mt/init/a/1/b/2/c/3/");
+	url_parser_struct *url_parser = roller_parser_url("/hm/Index/ct/test/mt/init/a/1/b/2/c/3/");
 	if(url_parser != NULL) {
-		printf("home:%s,controller:%s,method:%s\r\n",url_parser->home,url_parser->controller,url_parser->method);
+		//printf("home:%s,controller:%s,method:%s\r\n",url_parser->home,url_parser->controller,url_parser->method);
 	}
 
-	printf("\nfinished\n");
+	//printf("\nfinished\n");
+
+	params_kv *ptr_par = NULL;
+	ptr_par = p_kv->next;
+	while(ptr_par != NULL) {
+		//printf("key:%s => value:%s\n",ptr_par->key,ptr_par->value);
+		ptr_par = ptr_par->next;
+	}
+
 	return 1;
 }
 */
+
 #endif
 
