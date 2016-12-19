@@ -201,15 +201,32 @@ PHP_METHOD(Roller, startup) {
 PHP_METHOD(Roller, sayroute) {
 	char *arg = NULL;
 	int arg_len;
-	zval *value, *self;
+
+	zval *value_controller,*value_home,*value_method, *self;
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &arg, &arg_len) == FAILURE) {
 		WRONG_PARAM_COUNT;
 	}
+
 	self = getThis();
-	MAKE_STD_ZVAL(value);
-	ZVAL_STRINGL(value, arg, arg_len, 0);
-	SEPARATE_ZVAL_TO_MAKE_IS_REF(&value);
-	zend_update_property(Z_OBJCE_P(self), self, ZEND_STRL("_name"), value TSRMLS_CC);
+	url_parser_struct *url_parser = roller_parser_url(arg);
+	php_printf("buf:%s,%s,%s\n",url_parser->controller,url_parser->home,url_parser->method);
+
+	//@TODO
+	MAKE_STD_ZVAL(value_controller);
+	MAKE_STD_ZVAL(value_home);
+	MAKE_STD_ZVAL(value_method);
+
+	ZVAL_STRINGL(value_controller, url_parser->controller, strlen(url_parser->controller), 0);
+	ZVAL_STRINGL(value_home, url_parser->home, strlen(url_parser->home), 0);
+	ZVAL_STRINGL(value_method, url_parser->method, strlen(url_parser->method), 0);
+
+	SEPARATE_ZVAL_TO_MAKE_IS_REF(&value_controller);
+	SEPARATE_ZVAL_TO_MAKE_IS_REF(&value_home);
+	SEPARATE_ZVAL_TO_MAKE_IS_REF(&value_method);
+
+	zend_update_property(Z_OBJCE_P(self), self, ZEND_STRL("_controller"), value_controller TSRMLS_CC);
+	zend_update_property(Z_OBJCE_P(self), self, ZEND_STRL("_home"), value_home TSRMLS_CC);
+	zend_update_property(Z_OBJCE_P(self), self, ZEND_STRL("_method"), value_method TSRMLS_CC);
 	RETURN_TRUE;
 }
 
