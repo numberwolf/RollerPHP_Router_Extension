@@ -154,6 +154,8 @@ PHP_MINFO_FUNCTION(rollerphp)
 {
 	php_info_print_table_start();
 	php_info_print_table_header(2, "rollerphp support", "enabled");
+	php_info_print_table_row(2, "author" , "ChangYanlong");
+	php_info_print_table_row(2, "RollerPHP_framework support" , "enabled");
 	php_info_print_table_end();
 
 	/* Remove comments if you have entries in php.ini
