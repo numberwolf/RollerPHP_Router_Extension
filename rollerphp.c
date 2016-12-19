@@ -40,12 +40,17 @@ static int le_rollerphp;
  *
  * Every user visible function must have an entry in rollerphp_functions[].
  */
+// @TODO
 ZEND_BEGIN_ARG_INFO(arg_roller_sname, 0)
 ZEND_ARG_INFO(0, name)
+ZEND_ARG_INFO(0, controller)
+ZEND_ARG_INFO(0, home)
+ZEND_ARG_INFO(0, method)
 ZEND_END_ARG_INFO() const zend_function_entry rollerphp_functions[] = {
 	PHP_ME(Roller, gname,     NULL, ZEND_ACC_PUBLIC)
 	PHP_ME(Roller, startup,     NULL, ZEND_ACC_PUBLIC)
 	PHP_ME(Roller, sname,     arg_roller_sname, ZEND_ACC_PUBLIC)
+	PHP_ME(Roller, sayroute,     arg_roller_sname, ZEND_ACC_PUBLIC)
 	{NULL, NULL, NULL} /* Must be the last line in rollerphp_functions[] */ 
 };
 /* }}} */
@@ -106,7 +111,11 @@ PHP_MINIT_FUNCTION(rollerphp)
 	zend_class_entry roller; INIT_CLASS_ENTRY(roller, "Roller", rollerphp_functions);
 	roller_ce = zend_register_internal_class_ex(&roller, NULL, NULL TSRMLS_CC);
 
-	zend_declare_property_null(roller_ce, ZEND_STRL("_name"), ZEND_ACC_PUBLIC TSRMLS_CC); return SUCCESS;
+	zend_declare_property_null(roller_ce, ZEND_STRL("_name"), ZEND_ACC_PUBLIC TSRMLS_CC); 
+	zend_declare_property_null(roller_ce, ZEND_STRL("_controller"), ZEND_ACC_PUBLIC TSRMLS_CC); 
+	zend_declare_property_null(roller_ce, ZEND_STRL("_home"), ZEND_ACC_PUBLIC TSRMLS_CC); 
+	zend_declare_property_null(roller_ce, ZEND_STRL("_method"), ZEND_ACC_PUBLIC TSRMLS_CC); 
+	return SUCCESS;
 }
 /* }}} */
 
@@ -185,6 +194,24 @@ PHP_METHOD(Roller, startup) {
 	RETURN_TRUE;
 }
 
+/***************
+  2. 初始化路由参数等等
+  @TODO
+ **************/
+PHP_METHOD(Roller, sayroute) {
+	char *arg = NULL;
+	int arg_len;
+	zval *value, *self;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &arg, &arg_len) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+	self = getThis();
+	MAKE_STD_ZVAL(value);
+	ZVAL_STRINGL(value, arg, arg_len, 0);
+	SEPARATE_ZVAL_TO_MAKE_IS_REF(&value);
+	zend_update_property(Z_OBJCE_P(self), self, ZEND_STRL("_name"), value TSRMLS_CC);
+	RETURN_TRUE;
+}
 
 PHP_METHOD(Roller, sname) {
 	char *arg = NULL;

@@ -4,6 +4,8 @@
     $person->sname("mickelfeng"); 
 	echo "\n";
 	echo $person->gname()."\n<br/>";
+	$person->_controller = "aaaaa";
+	echo $person->_controller."\r\n";
 
 
 
