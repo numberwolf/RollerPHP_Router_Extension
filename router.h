@@ -175,10 +175,17 @@ url_parser_struct *roller_parser_url(char *url) {
 		//printf("len:%d,%d\n",(int)strlen(ptr->param),(int)strlen(HOME_KEY));
 
 		if(noneRouteParam == FALSE && meth_key_showed == FALSE) {
-			if(0 == strcmp(ptr->param , HOME_KEY)) memcpy(return_parser->home , ptr->next->param,strlen(ptr->next->param)); 
-			if(0 == strcmp(ptr->param , CONT_KEY)) memcpy(return_parser->controller , ptr->next->param,strlen(ptr->next->param)); 
+			if(0 == strcmp(ptr->param , HOME_KEY)) {
+				memcpy(return_parser->home , ptr->next->param,strlen(ptr->next->param)+1); 
+				return_parser->home[strlen(ptr->next->param)] = '\0';
+			}
+			if(0 == strcmp(ptr->param , CONT_KEY)) {
+				memcpy(return_parser->controller , ptr->next->param,strlen(ptr->next->param)+1); 
+				return_parser->controller[strlen(ptr->next->param)] = '\0';
+			}
 			if(0 == strcmp(ptr->param , METH_KEY)) {
-				memcpy(return_parser->method , ptr->next->param,strlen(ptr->next->param)); 
+				memcpy(return_parser->method , ptr->next->param,strlen(ptr->next->param)+1); 
+				return_parser->method[strlen(ptr->next->param)] = '\0';
 				meth_key_showed = TRUE;
 				//break;
 			}
