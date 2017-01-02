@@ -90,7 +90,7 @@ url_param_link_list *roller_get_param(char *url) {
 		//ptr->param[strlen(result)] = '\0';
 		//ptr = ptr->next;
 
-        ////printf( "result is \"%s\"\n", ptr->param);
+        printf( "result is \"%s\"\n", ptr->param);
 		if(0 == strcmp(result , HOME_KEY)) global_bool_main_default->isHomeNull = FALSE;
 		if(0 == strcmp(result , CONT_KEY)) global_bool_main_default->isContNull = FALSE;
 		if(0 == strcmp(result , METH_KEY)) global_bool_main_default->isMethNull = FALSE;
@@ -159,12 +159,16 @@ url_parser_struct *roller_parser_url(char *url) {
 	/****  目前处理方式，路由参数要么都传，要么都不传 ****/
 	BOOL meth_key_showed = FALSE;
 	i = 0;
-	while(ptr->next != NULL) {
+	while(ptr != NULL) {
+
 		if(isSingleCount == TRUE && i == 0) { 
 			ptr = ptr->next;
 			i = 2;
 			continue; // 如果为单数，则忽略第一个
 		}
+		//printf("%s\n",ptr->param);
+		//ptr = ptr->next;
+		//continue;
 
 		//printf("ptr-> %s,%s\n",ptr->param,HOME_KEY);
 		//if(0 == strcmp(ptr->param , HOME_KEY)) //printf("==is equal==\n");
@@ -176,6 +180,7 @@ url_parser_struct *roller_parser_url(char *url) {
 			if(0 == strcmp(ptr->param , METH_KEY)) {
 				memcpy(return_parser->method , ptr->next->param,strlen(ptr->next->param)); 
 				meth_key_showed = TRUE;
+				//break;
 			}
 
 			ptr = ptr->next->next;
@@ -195,24 +200,28 @@ url_parser_struct *roller_parser_url(char *url) {
 
 		ptr = ptr->next;
 	}
+
 	ptr_kv->next = NULL;
 
 	return return_parser;
 }
 int main() {
-	url_parser_struct *url_parser = roller_parser_url("/hm/Index/ct/test/mt/init/a/1/b/2/c/3/");
+	//url = '/RollerPHP_framework/index.php/hm/Index/ct/index/mt/start';
+	url_parser_struct *url_parser = roller_parser_url("/RollerPHP_framework/index.php/hm/Index/ct/index/mt/start");
 	if(url_parser != NULL) {
 		printf("home:%s,controller:%s,method:%s\r\n",url_parser->home,url_parser->controller,url_parser->method);
 	}
 
 	//printf("\nfinished\n");
 
+	/*
 	params_kv *ptr_par = NULL;
 	ptr_par = p_kv->next;
 	while(ptr_par != NULL) {
 		//printf("key:%s => value:%s\n",ptr_par->key,ptr_par->value);
 		ptr_par = ptr_par->next;
 	}
+	*/
 
 	return 1;
 }

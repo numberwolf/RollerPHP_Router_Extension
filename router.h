@@ -90,6 +90,7 @@ url_param_link_list *roller_get_param(char *url) {
 		//ptr->param[strlen(result)] = '\0';
 		//ptr = ptr->next;
 
+        //printf( "result is \"%s\"\n", ptr->param);
 		if(0 == strcmp(result , HOME_KEY)) global_bool_main_default->isHomeNull = FALSE;
 		if(0 == strcmp(result , CONT_KEY)) global_bool_main_default->isContNull = FALSE;
 		if(0 == strcmp(result , METH_KEY)) global_bool_main_default->isMethNull = FALSE;
@@ -106,24 +107,31 @@ url_param_link_list *roller_get_param(char *url) {
 url_parser_struct *roller_parser_url(char *url) {
 	int i,j;
 	int length = strlen(url);
+	//printf("%d\n",(int)length);
 
 	int new_len = length;
 	if(url[0] == '/') {
+		//printf("0\n");
 		i = 1;
 		new_len--;
 	}
 	if(url[length-1] == '/') {
+		//printf("length-1\n");
 		length--;
 		new_len--;
 	}
+	//printf("new_len:%d\n",new_len);
 
 	char new_url[new_len+1];
 	
 	for(j = 0; i < length; i++, j++) {
 		new_url[j] = url[i];
+		//printf("new_url[%d] = %c\n",j,new_url[j]);
 	}
 	new_url[new_len] = '\0';// 必须补
+	//printf("len:%d\n",(int)strlen(new_url));
 
+	//printf("new_url:%s,last:%c,newlength:%d\n",new_url,new_url[strlen(new_url)-1],(int)strlen(new_url));
 
 	url_param_link_list *url_param = roller_get_param(new_url);
 	url_parser_struct *return_parser = (url_parser_struct*)malloc(sizeof(url_parser_struct));
@@ -132,6 +140,7 @@ url_parser_struct *roller_parser_url(char *url) {
 	if(global_bool_main_default->isContNull == TRUE) memcpy(return_parser->controller , DEFAULT_CONTROLLER,strlen(DEFAULT_CONTROLLER));
 	if(global_bool_main_default->isMethNull == TRUE) memcpy(return_parser->method , DEFAULT_METHOD,strlen(DEFAULT_METHOD));
 
+	//printf("paramCount:%d\n",global_bool_main_default->paramCount);
 	BOOL isSingleCount = FALSE; // 参数是否为单数
 	BOOL noneRouteParam = FALSE; // 是否没有路由参数，只有值参数
 	if(global_bool_main_default->paramCount%2 != 0) {
@@ -141,6 +150,7 @@ url_parser_struct *roller_parser_url(char *url) {
 		noneRouteParam = TRUE;
 	}
 
+	//printf("%s\n",url_param->next->param);
 	p_kv = (params_kv*)malloc(sizeof(params_kv));
 	params_kv *ptr_kv = NULL;
 	ptr_kv = p_kv;
@@ -149,13 +159,20 @@ url_parser_struct *roller_parser_url(char *url) {
 	/****  目前处理方式，路由参数要么都传，要么都不传 ****/
 	BOOL meth_key_showed = FALSE;
 	i = 0;
-	while(ptr->next != NULL) {
+	while(ptr != NULL) {
+
 		if(isSingleCount == TRUE && i == 0) { 
 			ptr = ptr->next;
 			i = 2;
 			continue; // 如果为单数，则忽略第一个
 		}
+		//printf("%s\n",ptr->param);
+		//ptr = ptr->next;
+		//continue;
 
+		//printf("ptr-> %s,%s\n",ptr->param,HOME_KEY);
+		//if(0 == strcmp(ptr->param , HOME_KEY)) //printf("==is equal==\n");
+		//printf("len:%d,%d\n",(int)strlen(ptr->param),(int)strlen(HOME_KEY));
 
 		if(noneRouteParam == FALSE && meth_key_showed == FALSE) {
 			if(0 == strcmp(ptr->param , HOME_KEY)) memcpy(return_parser->home , ptr->next->param,strlen(ptr->next->param)); 
@@ -163,6 +180,7 @@ url_parser_struct *roller_parser_url(char *url) {
 			if(0 == strcmp(ptr->param , METH_KEY)) {
 				memcpy(return_parser->method , ptr->next->param,strlen(ptr->next->param)); 
 				meth_key_showed = TRUE;
+				//break;
 			}
 
 			ptr = ptr->next->next;
@@ -182,30 +200,12 @@ url_parser_struct *roller_parser_url(char *url) {
 
 		ptr = ptr->next;
 	}
+
 	ptr_kv->next = NULL;
 
 	return return_parser;
 }
 
-/*
-int main() {
-	url_parser_struct *url_parser = roller_parser_url("/hm/Index/ct/test/mt/init/a/1/b/2/c/3/");
-	if(url_parser != NULL) {
-		printf("home:%s,controller:%s,method:%s\r\n",url_parser->home,url_parser->controller,url_parser->method);
-	}
-
-	//printf("\nfinished\n");
-
-	params_kv *ptr_par = NULL;
-	ptr_par = p_kv->next;
-	while(ptr_par != NULL) {
-		//printf("key:%s => value:%s\n",ptr_par->key,ptr_par->value);
-		ptr_par = ptr_par->next;
-	}
-
-	return 1;
-}
-*/
 
 #endif
 
