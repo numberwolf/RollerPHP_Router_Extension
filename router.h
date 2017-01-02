@@ -18,21 +18,21 @@
 
 #include "include_common.h"
 
-#define CONTROLLER_DIR				"Controller"
-#define MODEL_DIR					"Models"
-#define CONFIG_DIR					"Configs"
-#define VIWES_DIR					"Views"
-#define TEMPPLATES_DIR				"Templates"
-#define SYSTEM_DIR					"System"
-#define STORAGE_DIR					"Storage"
+#define CONTROLLER_DIR				"Controller\0"
+#define MODEL_DIR					"Models\0"
+#define CONFIG_DIR					"Configs\0"
+#define VIWES_DIR					"Views\0"
+#define TEMPPLATES_DIR				"Templates\0"
+#define SYSTEM_DIR					"System\0"
+#define STORAGE_DIR					"Storage\0"
 
-#define DEFAULT_HOME				"Index"
-#define DEFAULT_CONTROLLER			"index"
-#define DEFAULT_METHOD				"index"
+#define DEFAULT_HOME				"Index\0"
+#define DEFAULT_CONTROLLER			"index\0"
+#define DEFAULT_METHOD				"start\0"
 
-#define HOME_KEY					"hm"
-#define CONT_KEY					"ct"
-#define METH_KEY					"mt"
+#define HOME_KEY					"hm\0"
+#define CONT_KEY					"ct\0"
+#define METH_KEY					"mt\0"
 
 /********* DEFINE URL STRUCT **********/
 typedef struct url_parser_struct {
@@ -140,9 +140,18 @@ url_parser_struct *roller_parser_url(char *url) {
 	url_param_link_list *url_param = roller_get_param(new_url);
 	url_parser_struct *return_parser = (url_parser_struct*)malloc(sizeof(url_parser_struct));
 
-	if(global_bool_main_default->isHomeNull == TRUE) memcpy(return_parser->home , DEFAULT_HOME,strlen(DEFAULT_HOME));
-	if(global_bool_main_default->isContNull == TRUE) memcpy(return_parser->controller , DEFAULT_CONTROLLER,strlen(DEFAULT_CONTROLLER));
-	if(global_bool_main_default->isMethNull == TRUE) memcpy(return_parser->method , DEFAULT_METHOD,strlen(DEFAULT_METHOD));
+	if(global_bool_main_default->isHomeNull == TRUE){
+		memcpy(return_parser->home , DEFAULT_HOME,strlen(DEFAULT_HOME)+1);
+		return_parser->home[strlen(DEFAULT_HOME)] = '\0';
+	}
+	if(global_bool_main_default->isContNull == TRUE) {
+		memcpy(return_parser->controller , DEFAULT_CONTROLLER,strlen(DEFAULT_CONTROLLER)+1);
+		return_parser->controller[strlen(DEFAULT_CONTROLLER)] = '\0';
+	}
+	if(global_bool_main_default->isMethNull == TRUE) {
+		memcpy(return_parser->method , DEFAULT_METHOD,strlen(DEFAULT_METHOD)+1);
+		return_parser->method[strlen(DEFAULT_METHOD)] = '\0';
+	}
 
 	//printf("paramCount:%d\n",global_bool_main_default->paramCount);
 	BOOL isSingleCount = FALSE; // 参数是否为单数
