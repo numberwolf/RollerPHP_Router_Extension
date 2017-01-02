@@ -211,7 +211,7 @@ PHP_METHOD(Roller, sayroute) {
 
 	self = getThis();
 	url_parser_struct *url_parser = roller_parser_url(arg);
-	php_printf("buf:%s,%s,%s\n",url_parser->controller,url_parser->home,url_parser->method);
+	//php_printf("buf:%s,%s,%s\n",url_parser->controller,url_parser->home,url_parser->method);
 
 	//@TODO
 	MAKE_STD_ZVAL(value_controller);
