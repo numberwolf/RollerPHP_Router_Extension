@@ -182,18 +182,6 @@ PHP_METHOD(Roller, gname) {
   1. StartUP，启动路由，初始化一些数据
  ********************/
 PHP_METHOD(Roller, startup) {
-	char buf[80];
-    getcwd(buf,sizeof(buf));   
-	//php_printf("buf:%s",buf);
-    //printf("current working directory: %s\n", buf);  
-
-	zval *value, *self;
-	self = getThis();
-	MAKE_STD_ZVAL(value);
-	ZVAL_STRINGL(value, buf, strlen(buf), 0);
-	SEPARATE_ZVAL_TO_MAKE_IS_REF(&value);
-	zend_update_property(Z_OBJCE_P(self), self, ZEND_STRL("_name"), value TSRMLS_CC);
-	RETURN_TRUE;
 }
 
 /***************
@@ -227,7 +215,18 @@ PHP_METHOD(Roller, sayroute) {
 	zend_update_property(Z_OBJCE_P(self), self, ZEND_STRL("_controller"), value_controller TSRMLS_CC);
 	zend_update_property(Z_OBJCE_P(self), self, ZEND_STRL("_home"), value_home TSRMLS_CC);
 	zend_update_property(Z_OBJCE_P(self), self, ZEND_STRL("_method"), value_method TSRMLS_CC);
-	RETURN_TRUE;
+
+	// start to get data arr : *p_kv
+	params_kv *my_kv = get_data_arr_list()->next;
+	array_init(return_value);
+	while(my_kv != NULL) {
+		//printf("key:%s => value:%s\n",ptr_par->key,ptr_par->value);
+		add_assoc_string(return_value,my_kv->key,my_kv->value,1);
+		my_kv = my_kv->next;
+	}
+	
+
+	//RETURN_TRUE;
 }
 
 PHP_METHOD(Roller, sname) {

@@ -87,10 +87,10 @@ url_param_link_list *roller_get_param(char *url) {
 		ptr->next = (url_param_link_list*)malloc(sizeof(url_param_link_list));
 		ptr = ptr->next;
 		memcpy(ptr->param, result, strlen(result)+1);
-		ptr->param[strlen(result)+1] = '\0';
+		//ptr->param[strlen(result)] = '\0';
 		//ptr = ptr->next;
 
-        printf( "result is \"%s\"\n", ptr->param);
+        //printf( "result is \"%s\"\n", ptr->param);
 		if(0 == strcmp(result , HOME_KEY)) global_bool_main_default->isHomeNull = FALSE;
 		if(0 == strcmp(result , CONT_KEY)) global_bool_main_default->isContNull = FALSE;
 		if(0 == strcmp(result , METH_KEY)) global_bool_main_default->isMethNull = FALSE;
@@ -176,14 +176,16 @@ url_parser_struct *roller_parser_url(char *url) {
 
 		if(noneRouteParam == FALSE && meth_key_showed == FALSE) {
 			if(0 == strcmp(ptr->param , HOME_KEY)) {
-				memcpy(return_parser->home , ptr->next->param,strlen(ptr->next->param)); 
-
+				memcpy(return_parser->home , ptr->next->param,strlen(ptr->next->param)+1); 
+				return_parser->home[strlen(ptr->next->param)] = '\0';
 			}
 			if(0 == strcmp(ptr->param , CONT_KEY)) {
-				memcpy(return_parser->controller , ptr->next->param,strlen(ptr->next->param)); 
+				memcpy(return_parser->controller , ptr->next->param,strlen(ptr->next->param)+1); 
+				return_parser->controller[strlen(ptr->next->param)] = '\0';
 			}
 			if(0 == strcmp(ptr->param , METH_KEY)) {
-				memcpy(return_parser->method , ptr->next->param,strlen(ptr->next->param)); 
+				memcpy(return_parser->method , ptr->next->param,strlen(ptr->next->param)+1); 
+				return_parser->method[strlen(ptr->next->param)] = '\0';
 				meth_key_showed = TRUE;
 				//break;
 			}
@@ -210,26 +212,26 @@ url_parser_struct *roller_parser_url(char *url) {
 
 	return return_parser;
 }
+
 int main() {
 	//url = '/RollerPHP_framework/index.php/hm/Index/ct/index/mt/start';
-	url_parser_struct *url_parser = roller_parser_url("/RollerPHP_framework/index.php/hm/Index/ct/index/mt/start");
+	url_parser_struct *url_parser = roller_parser_url("/RollerPHP_framework/index.php/hm/Index/ct/index/mt/start/a/1/b/2");
 	if(url_parser != NULL) {
 		printf("home:%s,controller:%s,method:%s\r\n",url_parser->home,url_parser->controller,url_parser->method);
 	}
 
 	//printf("\nfinished\n");
 
-	/*
 	params_kv *ptr_par = NULL;
 	ptr_par = p_kv->next;
 	while(ptr_par != NULL) {
-		//printf("key:%s => value:%s\n",ptr_par->key,ptr_par->value);
+		printf("key:%s => value:%s\n",ptr_par->key,ptr_par->value);
 		ptr_par = ptr_par->next;
 	}
-	*/
 
 	return 1;
 }
+
 
 #endif
 

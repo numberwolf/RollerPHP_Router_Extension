@@ -62,6 +62,10 @@ typedef struct params_kv {
 url_main_is_default *global_bool_main_default;
 params_kv *p_kv;
 
+params_kv *get_data_arr_list() {
+	return p_kv;
+}
+
 url_param_link_list *roller_get_param(char *url) {
 	global_bool_main_default = (url_main_is_default*)malloc(sizeof(url_main_is_default));
 	global_bool_main_default->isHomeNull = TRUE;
@@ -200,8 +204,10 @@ url_parser_struct *roller_parser_url(char *url) {
 		if(meth_key_showed == TRUE && i%2 == 0) {
 			ptr_kv->next = (params_kv*)malloc(sizeof(params_kv));
 			ptr_kv = ptr_kv->next;
-			memcpy(ptr_kv->key , ptr->param,strlen(ptr->param));
-			memcpy(ptr_kv->value , ptr->next->param,strlen(ptr->next->param));
+			memcpy(ptr_kv->key , ptr->param,strlen(ptr->param)+1);
+			ptr_kv->key[strlen(ptr->param)] = '\0';
+			memcpy(ptr_kv->value , ptr->next->param,strlen(ptr->next->param)+1);
+			ptr_kv->value[strlen(ptr->param)] = '\0';
 		}
 		i++;
 
