@@ -87,7 +87,7 @@ url_param_link_list *roller_get_param(char *url) {
 		ptr->next = (url_param_link_list*)malloc(sizeof(url_param_link_list));
 		ptr = ptr->next;
 		memcpy(ptr->param, result, strlen(result)+1);
-		//ptr->param[strlen(result)] = '\0';
+		ptr->param[strlen(result)] = '\0';
 		//ptr = ptr->next;
 
         printf( "result is \"%s\"\n", ptr->param);
@@ -175,8 +175,13 @@ url_parser_struct *roller_parser_url(char *url) {
 		//printf("len:%d,%d\n",(int)strlen(ptr->param),(int)strlen(HOME_KEY));
 
 		if(noneRouteParam == FALSE && meth_key_showed == FALSE) {
-			if(0 == strcmp(ptr->param , HOME_KEY)) memcpy(return_parser->home , ptr->next->param,strlen(ptr->next->param)); 
-			if(0 == strcmp(ptr->param , CONT_KEY)) memcpy(return_parser->controller , ptr->next->param,strlen(ptr->next->param)); 
+			if(0 == strcmp(ptr->param , HOME_KEY)) {
+				memcpy(return_parser->home , ptr->next->param,strlen(ptr->next->param)); 
+
+			}
+			if(0 == strcmp(ptr->param , CONT_KEY)) {
+				memcpy(return_parser->controller , ptr->next->param,strlen(ptr->next->param)); 
+			}
 			if(0 == strcmp(ptr->param , METH_KEY)) {
 				memcpy(return_parser->method , ptr->next->param,strlen(ptr->next->param)); 
 				meth_key_showed = TRUE;
