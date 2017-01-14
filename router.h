@@ -75,6 +75,8 @@ void clean_data_arr_list() {
 		free(tmp);
 	}
 	p_kv = NULL;
+	ptr = NULL;
+	tmp = NULL;
 }
 
 url_param_link_list *roller_get_param(char *url) {
