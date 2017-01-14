@@ -224,7 +224,8 @@ PHP_METHOD(Roller, sayroute) {
 		add_assoc_string(return_value,my_kv->key,my_kv->value,1);
 		my_kv = my_kv->next;
 	}
-	
+
+	clean_data_arr_list();
 
 	//RETURN_TRUE;
 }

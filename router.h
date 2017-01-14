@@ -66,6 +66,17 @@ params_kv *get_data_arr_list() {
 	return p_kv;
 }
 
+void clean_data_arr_list() {
+	params_kv *ptr = p_kv->next;
+	params_kv *tmp = NULL;
+	while(ptr != NULL) {
+		tmp = ptr;
+		ptr = ptr->next;
+		free(tmp);
+	}
+	p_kv = NULL;
+}
+
 url_param_link_list *roller_get_param(char *url) {
 	global_bool_main_default = (url_main_is_default*)malloc(sizeof(url_main_is_default));
 	global_bool_main_default->isHomeNull = TRUE;
